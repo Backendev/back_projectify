@@ -1,44 +1,50 @@
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
-
+from dotenv import load_dotenv
 from g_token import TokenGen
+import os
+from singleton import Singleton
 
+class Data(metaclass=Singleton):
+    def __init__(self):
+        self.cred = credentials.Certificate(os.getenv('CONFIG_FIREBASE'))
+        firebase_admin.initialize_app(self.cred)
+        self.db = firestore.client()
+        self.user_col = self.db.collection(u'users')
+        self.projects_col = self.db.collection(u'projects')
+        self.reports_col = self.db.collection(u'reports')
+    
+    def get_user(self,user,passd=None,idu=None):
+        docs = []
+        if idu != None:
+            users = list(self.user_col.where(u'user', u'==',user).stream())
+            if users[0].id == idu:
+                docs = users
+        elif passd != None:
+            docs = list(self.user_col.where(u'user', u'==',user).where(u'pass',u'==',passd).stream())
+        else:
+            docs = list(self.user_col.where(u'user', u'==',user).stream())
+        l = len(list(docs))
+        result = None
+        if l > 0:
+            for doc in docs:
+                result = doc.to_dict(),doc.id
+        return result
+    def new_user(self,user,passd):
+        user_old = self.get_user(user=user)
+        result = None
+        if user_old != None:
+            result = False
+        else:
+            docs = list(self.user_col.stream())
+            ids = int(len(docs))
+            new_id = ids +1
+            new_user = self.user_col.document(u''+str(new_id))
+            new_user.set({
+                u'user': user,
+                u'pass':passd
+            })
+            result = True
+        return result
 
-
-
-
-message = {1:'123456'}
-token = TokenGen(message)
-print(token.get_token.decode())
-print(f'Dec => {token.get_desc_token()}')
-
-
-cred = credentials.Certificate("projectify10-firebase-adminsdk-ektvs-08d4e6b934.json")
-firebase_admin.initialize_app(cred)
-db = firestore.client()
-doc_ref = db.collection(u'users')
-docs = doc_ref.stream()
-for doc in docs:
-    print(f'{doc.id} => {doc.to_dict()}')
-print("22")
-doc_ref = db.collection(u'users').document(u'1')
-doc_ref.set({
-    u'first': u'Ada',
-    u'last': u'Lovelace',
-    u'born': 1815
-})
-
-docs = list(db.collection(u'users').where(u'first', u'==',u'Ada').stream())
-l = len(list(docs))
-print(l)
-res_dict = {}
-# print(len(list(docs)))
-if l > 0:
-    print("mayor")
-    for doc in docs:
-        res_dict = doc.to_dict()
-        print(f'{doc.id}22 => {doc.to_dict()}')
-print("444")
-if len(res_dict) > 0:
-    print(f'Result {res_dict["last"]}')
