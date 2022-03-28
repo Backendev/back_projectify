@@ -1,20 +1,15 @@
 from aplication import Aplication
-import argparse
+import os
+from flask import Flask
 
-class Endpoint:
+app = Flask(__name__)
 
-    
-    def __init__(self):
-        self.parser = argparse.ArgumentParser(description='Servir aplicacion')
-        self.parser.add_argument('-p', '--port', type=int, help='Port aplication server')
-        self.args = self.parser.parse_args()
-        self.port = 8000
-        if self.args.port != None:
-            self.port = self.args.port
-        a = Aplication(port=self.port)
-        a.run_app()
+_port = os.environ.get('PORT', 5000)
 
+@app.route('/')
+def index():
+    return "Projectify"
 
 if __name__ == '__main__':
-    Endpoint()
+    app.run(host='0.0.0.0', port=_port)
     
