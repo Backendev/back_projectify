@@ -71,7 +71,7 @@ def verify_token_p(fun):
             return str(e)
     return verifing
 
-@app.route('/',methods=['GET'])
+@app.route('/')
 def index():
     return "Projectify"
 
