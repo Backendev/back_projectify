@@ -84,7 +84,8 @@ class DataAux():
     @staticmethod
     def cipher_pass(text):
         iv =  'BBBBBBBBBBBBBBBB'.encode('utf-8')
-        key = os.getenv('SECRET_PASS')
+        # key = os.getenv('SECRET_PASS')
+        key = os.environ.get('SECRET_PASS',os.getenv('SECRET_PASS'))
         data= pad(text.encode(),16)
         cipher = AES.new(key.encode('utf-8'),AES.MODE_CBC,iv)
         cipher= base64.b64encode(cipher.encrypt(data))
@@ -95,7 +96,8 @@ class DataAux():
     @staticmethod
     def decipher_pass(text):
         iv =  'BBBBBBBBBBBBBBBB'.encode('utf-8')
-        key = os.getenv('SECRET_PASS')
+        # key = os.getenv('SECRET_PASS')
+        key = os.environ.get('SECRET_PASS',os.getenv('SECRET_PASS'))
         enc = base64.b64decode(text)
         decipher = AES.new(key.encode('utf-8'), AES.MODE_CBC, iv)
         decipher= unpad(decipher.decrypt(enc),16)

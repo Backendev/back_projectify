@@ -12,7 +12,8 @@ class Data(metaclass=Singleton):
 
 
     def __init__(self):
-        self.cred = credentials.Certificate(os.getenv('CONFIG_FIREBASE'))
+        config = os.environ.get('CONFIG_FIREBASE',os.getenv('CONFIG_FIREBASE'))
+        self.cred = credentials.Certificate(config)
         firebase_admin.initialize_app(self.cred)
         self.db = firestore.client()
         self.user_col = self.db.collection(u'users')
