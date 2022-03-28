@@ -3,7 +3,6 @@ import re,os
 import base64 
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad,unpad
-from Crypto.Random import get_random_bytes #only for AES CBC mode
 from dotenv import load_dotenv
 
 class DataAux():
