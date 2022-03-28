@@ -37,6 +37,7 @@ class Routers:
             else:
                 return self.generate_response("Usuario o contraseña incorrectos",200)
         
+
         @app.route('/new_user',methods=['POST'])
         def new_user():
             request_data = request.args.to_dict()
@@ -52,6 +53,7 @@ class Routers:
             except:
                 return self.generate_response(self.error,500)
         
+
         @app.route('/verify',methods=['POST'])
         @self.verify_token
         def verify(user):
@@ -59,6 +61,7 @@ class Routers:
             user = self.d.get_user_id(user)
             print(user)
             return self.generate_response("Yes",200)
+
 
         @app.route('/new_project',methods=['POST'])
         @self.verify_token
@@ -78,6 +81,7 @@ class Routers:
             except:
                 return self.generate_response(self.error,500)
 
+
         @app.route('/new_report',methods=['POST'])
         @self.verify_token
         def new_report(user):
@@ -95,6 +99,7 @@ class Routers:
             except:
                 return self.generate_response(self.error,500)
         
+
         @app.route('/reports/<user_name>',methods=['GET'])
         @self.verify_token_p
         def reports_name(user_name):
@@ -109,6 +114,7 @@ class Routers:
             except:
                 return self.generate_response(self.error,500)
 
+
         @app.route('/my_reports/',methods=['GET'])
         @self.verify_token
         def my_reports(user):
@@ -120,6 +126,7 @@ class Routers:
             except:
                 return self.generate_response(self.error,500)
         
+
         @app.route('/reports',methods=['GET'])
         @self.verify_token
         def reports(user):
@@ -128,6 +135,7 @@ class Routers:
                 return self.generate_response(results,200,type="json")
             except:
                 return self.generate_response(self.error,500)
+
 
     def generate_response(self,message,code=200,type="text"):
         response = None
@@ -144,6 +152,7 @@ class Routers:
                 mimetype='text/plain'
             )
         return response
+
 
     def verify_token(self,fun):
         @wraps(fun)
@@ -163,26 +172,21 @@ class Routers:
             except Exception as e:
                 resp = "Error en el servidor"
                 return self.generate_response(resp,500)
-                
-                
         return verifing
+
 
     def verify_token_p(self,fun):
         @wraps(fun)
         def verifing(*args,**kwargs):
             auth_headers = request.headers.get('Authorization', '').split()
-            print(auth_headers)
             token = auth_headers[1]
             result = "False"
             try:
                 result = self.tg.get_desc_token(token)
                 user_id = str(list(result.keys())[0])
-                print(f'Resulttok {type(result)}')
                 self.token = True
                 return fun(*args,**kwargs)
             except Exception as e:
-                result = "Error"
                 return str(e)
-                
         return verifing
         

@@ -100,6 +100,13 @@ print(f'DesCipher {cipher}')
 # week_start = int(date_start.strftime("%V"))
 # print(week_start)
 
+date = datetime(2020,1,1)
+week_start = int(date.strftime("%V"))
+print(f"Date - {str(week_start)}")
+
+res = da.week_range_month(date)
+print(f"Lista weeks month {str(res)}")
+
 
 
 

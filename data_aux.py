@@ -1,12 +1,15 @@
 from datetime import datetime
-import re,os
+import re,os,calendar
 import base64 
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad,unpad
 from dotenv import load_dotenv
 
 class DataAux():
+
     load_dotenv()
+
+
     @staticmethod
     def weeks_for_year(month_start,week_start,week_end,year):
         init = week_start
@@ -21,6 +24,7 @@ class DataAux():
             if not week in list_weeks_temp:
                 list_weeks_temp.append(week)
         return list_weeks_temp
+
 
     def weeks_range(self,date_start,date_end):
         week_start = int(date_start.strftime("%V"))
@@ -55,6 +59,28 @@ class DataAux():
         else:
             list_weeks = self.weeks_for_year(month_start,week_start,week_end,year_start)
         return list_weeks
+
+
+    def week_range_month(self,now):
+        year = now.year
+        print(year)
+        month = now.month
+        print(month)
+        start,end = calendar.monthrange(year,month)
+        start = 1
+        print(f'Inicio {start} - End {end}')
+        date_start = datetime(now.year,now.month,start)
+        date_end = datetime(now.year,now.month,end)
+        week_start = int(date_start.strftime("%V"))
+        week_end = int(date_end.strftime("%V"))
+        list_weeks = []
+        if (now.month == 1 and week_start > 4):
+            list_weeks.append(str(int(now.year) - 1)+"-W"+str(week_start))
+        for i in range(1,week_end):
+            list_weeks.append(str(now.year)+"-W"+str(i))
+        return list_weeks
+
+
     @staticmethod
     def cipher_pass(text):
         iv =  'BBBBBBBBBBBBBBBB'.encode('utf-8')
@@ -64,6 +90,8 @@ class DataAux():
         cipher= base64.b64encode(cipher.encrypt(data))
         result = cipher.decode("utf-8", "ignore")
         return result
+
+
     @staticmethod
     def decipher_pass(text):
         iv =  'BBBBBBBBBBBBBBBB'.encode('utf-8')
@@ -72,9 +100,12 @@ class DataAux():
         decipher = AES.new(key.encode('utf-8'), AES.MODE_CBC, iv)
         decipher= unpad(decipher.decrypt(enc),16)
         return decipher.decode("utf-8", "ignore")
+
+
     def split_date(self,date):
         sp_date = date.split("-")
         return int(sp_date[0]),int(sp_date[1]),int(sp_date[2])
+
 
     def validate_date(self,date):
         date = date.strip()
@@ -93,6 +124,7 @@ class DataAux():
             result = self.date_format(date,date_position)
         return result
 
+
     @staticmethod
     def date_format(date,dict_positions):
         date_split = date.split("-")
@@ -105,6 +137,7 @@ class DataAux():
                 result = str(year)+"-"+str(month)+"-"+str(day)
         return result
         
+
     @staticmethod
     def validate_result(result,text):
         if len(result) > 0 and result[0] == text:
@@ -113,6 +146,7 @@ class DataAux():
             result = None
         return result
     
+
     def validate_text(self,text):
         patron = r"[A-Za-z]*[A-Za-z-_*+@.0-9]*"
         result = re.findall(patron,text)
@@ -131,6 +165,7 @@ class DataAux():
         patron = r"[0-9]{4}-W[0-9]{1,2}"
         result = re.findall(patron,text)
         return self.validate_result(result,text)
+
 
     def validate_params(self,request_data,dict_params):
         dict_types = {

@@ -9,6 +9,8 @@ from data_aux import DataAux
 from datetime import datetime
 
 class Data(metaclass=Singleton):
+
+
     def __init__(self):
         self.cred = credentials.Certificate(os.getenv('CONFIG_FIREBASE'))
         firebase_admin.initialize_app(self.cred)
@@ -17,6 +19,8 @@ class Data(metaclass=Singleton):
         self.projects_col = self.db.collection(u'projects')
         self.reports_col = self.db.collection(u'reports')
         self.da = DataAux()
+
+
     def get_project(self,name):
         project = list(self.projects_col.where(u'name', u'==',name).stream())
         l = len(list(project))
@@ -25,6 +29,8 @@ class Data(metaclass=Singleton):
             for doc in project:
                 result = doc.to_dict(),doc.id
         return result
+
+
     def get_user_id(self,idu):
         doc = self.user_col.document(u''+str(idu)).get()
         res = None
@@ -32,6 +38,8 @@ class Data(metaclass=Singleton):
         res = doc.to_dict()
         print(res)
         return res
+
+
     def get_user(self,user,passd=None,idu=None):
         docs = []
         if idu != None:
@@ -48,6 +56,8 @@ class Data(metaclass=Singleton):
             for doc in docs:
                 result = doc.to_dict(),doc.id
         return result
+    
+    
     def new_user(self,user,passd):
         user_old = self.get_user(user=user)
         result = None
@@ -92,19 +102,16 @@ class Data(metaclass=Singleton):
 
     def new_report(self,user,name,week,porcent):
         project_old = self.get_project(name)
-        print(project_old)
-        result = None
         if project_old == None:
-            result = False
+            return "El proyecto no existe"
         else:
             project_id = project_old[1]
             project = project_old[0]
-            print(f'project: {project} - {str(type(project))}')
-            print(f'project_id: {project_id} - {str(type(project_id))}')
             weeks = list(project['weeks_list'])
-            print(weeks[0])
+            weeks_month =  self.da.week_range_month(datetime.now())
+            if not week in weeks_month:
+                return "La semena no esta en el rango del mes actual"
             if week in weeks:
-                print("yes")
                 reports = list(self.reports_col.stream())
                 ids = int(len(reports))
                 new_id = ids +1
@@ -115,16 +122,16 @@ class Data(metaclass=Singleton):
                     u'week':str(week),
                     u'porcent':porcent
                 })
-                result = True
+                return "reporte en semana "+str(week)+" con "+str(porcent)+"% creado!!"
             else:
-                print("no")
+                return "La semena no esta en el rango de semanas estimadas en el proyecto"
+    
     def get_reports(self,name=None):
         results = {}
         projects = list(self.projects_col.stream())
         reports = None
         res_reports = {}
         if name == None:
-            print("Completo")
             reports = list(self.reports_col.stream())
             for doc in reports:
                 res_reports[doc.id] = doc.to_dict()
@@ -143,9 +150,10 @@ class Data(metaclass=Singleton):
             res_users[doc.id] = doc.to_dict()
         for doc in projects:
             res_projects[doc.id] = doc.to_dict()
-        
         for k,v in res_projects.items():
             results[v['name']] = {}
+            weeks_range = v['weeks_list']
+            results[v['name']]['weeks_range'] = list(weeks_range)
         for k,v in res_reports.items():
             project = res_projects[v['project']]['name']
             user = [res_users[v['user']]][0]['user']
