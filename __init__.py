@@ -17,6 +17,60 @@ app = Flask(__name__)
 
 _port = os.environ.get('PORT', 5000)
 
+
+def generate_response(message,code=200,type="text"):
+    response = None
+    if type == "json":
+        response = app.response_class(
+            response=json.dumps(message),
+            status=code,
+            mimetype='application/json'
+        )
+    else:
+        response = app.response_class(
+            response=message,
+            status=code,
+            mimetype='text/plain'
+        )
+    return response
+
+
+def verify_token(fun):
+    @wraps(fun)
+    def verifing(*args,**kwargs):
+        auth_headers = request.headers.get('Authorization', '').split()
+        token = auth_headers[1]
+        result = False
+        try:
+            result = tg.get_desc_token(token)
+            if result != False:
+                user_id = str(list(result.keys())[0])
+                token = True
+                return fun(user_id)
+            else:
+                resp = "Token Incorrecto"
+                return generate_response(resp,302)
+        except Exception as e:
+            resp = "Error en el servidor"
+            return generate_response(resp,500)
+    return verifing
+
+
+def verify_token_p(fun):
+    @wraps(fun)
+    def verifing(*args,**kwargs):
+        auth_headers = request.headers.get('Authorization', '').split()
+        token = auth_headers[1]
+        result = "False"
+        try:
+            result = tg.get_desc_token(token)
+            user_id = str(list(result.keys())[0])
+            token = True
+            return fun(*args,**kwargs)
+        except Exception as e:
+            return str(e)
+    return verifing
+
 @app.route('/',methods=['GET'])
 def index():
     return "Projectify"
@@ -143,58 +197,9 @@ def reports(user):
         return generate_response(error,500)
 
 
-def generate_response(self,message,code=200,type="text"):
-    response = None
-    if type == "json":
-        response = self.app.response_class(
-            response=json.dumps(message),
-            status=code,
-            mimetype='application/json'
-        )
-    else:
-        response = self.app.response_class(
-            response=message,
-            status=code,
-            mimetype='text/plain'
-        )
-    return response
 
 
-def verify_token(self,fun):
-    @wraps(fun)
-    def verifing(*args,**kwargs):
-        auth_headers = request.headers.get('Authorization', '').split()
-        token = auth_headers[1]
-        result = False
-        try:
-            result = self.tg.get_desc_token(token)
-            if result != False:
-                user_id = str(list(result.keys())[0])
-                self.token = True
-                return fun(user_id)
-            else:
-                resp = "Token Incorrecto"
-                return self.generate_response(resp,302)
-        except Exception as e:
-            resp = "Error en el servidor"
-            return self.generate_response(resp,500)
-    return verifing
 
-
-def verify_token_p(self,fun):
-    @wraps(fun)
-    def verifing(*args,**kwargs):
-        auth_headers = request.headers.get('Authorization', '').split()
-        token = auth_headers[1]
-        result = "False"
-        try:
-            result = self.tg.get_desc_token(token)
-            user_id = str(list(result.keys())[0])
-            self.token = True
-            return fun(*args,**kwargs)
-        except Exception as e:
-            return str(e)
-    return verifing
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=_port)
