@@ -75,126 +75,126 @@ def verify_token_p(fun):
 def index():
     return "Projectify"
 
-@app.route('/login',methods=['POST'])
-def login():
-    tg.change_secret()
-    request_data = request.args.to_dict()
-    list_params = {"user":"text","pass":"text"}
-    res,errors = da.validate_params(request_data,list_params)
-    if len(errors) > 0:
-        return generate_response(errors,200)
-    user = res['user']
-    passd = res['pass']
-    res = d.get_user(user,passd)
-    if res != None:
-        try:
-            message = {res[1]:res[0]['user']}
-            token = tg.gen_token(message)
-            result = tg.get_token()
-            return generate_response(result,200)
-        except:
-            return generate_response(error,500)
-    else:
-        return generate_response("Usuario o contraseña incorrectos",200)
+# @app.route('/login',methods=['POST'])
+# def login():
+#     tg.change_secret()
+#     request_data = request.args.to_dict()
+#     list_params = {"user":"text","pass":"text"}
+#     res,errors = da.validate_params(request_data,list_params)
+#     if len(errors) > 0:
+#         return generate_response(errors,200)
+#     user = res['user']
+#     passd = res['pass']
+#     res = d.get_user(user,passd)
+#     if res != None:
+#         try:
+#             message = {res[1]:res[0]['user']}
+#             token = tg.gen_token(message)
+#             result = tg.get_token()
+#             return generate_response(result,200)
+#         except:
+#             return generate_response(error,500)
+#     else:
+#         return generate_response("Usuario o contraseña incorrectos",200)
 
 
-@app.route('/new_user',methods=['POST'])
-def new_user():
-    request_data = request.args.to_dict()
-    list_params = {"user":"text","pass":"text"}
-    request_data,errors = da.validate_params(request_data,list_params)
-    if len(errors) > 0:
-        return generate_response(errors,200)
-    try:
-        user = request_data['user']
-        passd = request_data['pass']
-        resp = d.new_user(user,passd)
-        return generate_response(resp,200)
-    except:
-        return generate_response(error,500)
+# @app.route('/new_user',methods=['POST'])
+# def new_user():
+#     request_data = request.args.to_dict()
+#     list_params = {"user":"text","pass":"text"}
+#     request_data,errors = da.validate_params(request_data,list_params)
+#     if len(errors) > 0:
+#         return generate_response(errors,200)
+#     try:
+#         user = request_data['user']
+#         passd = request_data['pass']
+#         resp = d.new_user(user,passd)
+#         return generate_response(resp,200)
+#     except:
+#         return generate_response(error,500)
 
 
-@app.route('/verify',methods=['POST'])
-@verify_token
-def verify(user):
-    print(user)
-    user = d.get_user_id(user)
-    print(user)
-    return generate_response("Yes",200)
+# @app.route('/verify',methods=['POST'])
+# @verify_token
+# def verify(user):
+#     print(user)
+#     user = d.get_user_id(user)
+#     print(user)
+#     return generate_response("Yes",200)
 
 
-@app.route('/new_project',methods=['POST'])
-@verify_token
-def new_project(user):
-    request_data = request.args.to_dict()
-    list_params = {"start":"date","end":"date","name":"text"}
-    request_data,errors = da.validate_params(request_data,list_params)
-    if len(errors) > 0:
-        return generate_response(errors,200)
-    try:
-        start = request_data["start"]
-        end = request_data["end"]
-        name = request_data["name"]
-        print(f'Name {name} - Start {start} - End {end}')
-        response = d.new_project(start,end,name)
-        return generate_response(response,200)
-    except:
-        return generate_response(error,500)
+# @app.route('/new_project',methods=['POST'])
+# @verify_token
+# def new_project(user):
+#     request_data = request.args.to_dict()
+#     list_params = {"start":"date","end":"date","name":"text"}
+#     request_data,errors = da.validate_params(request_data,list_params)
+#     if len(errors) > 0:
+#         return generate_response(errors,200)
+#     try:
+#         start = request_data["start"]
+#         end = request_data["end"]
+#         name = request_data["name"]
+#         print(f'Name {name} - Start {start} - End {end}')
+#         response = d.new_project(start,end,name)
+#         return generate_response(response,200)
+#     except:
+#         return generate_response(error,500)
 
 
-@app.route('/new_report',methods=['POST'])
-@verify_token
-def new_report(user):
-    request_data = request.args.to_dict()
-    list_params = {"porcent":"number","week":"week","name":"text"}
-    request_data,errors = da.validate_params(request_data,list_params)
-    if len(errors) > 0:
-        return generate_response(errors,200)
-    try:
-        porcent = request_data["porcent"]
-        week = request_data["week"]
-        name = request_data["name"]
-        d.new_report(user,str(name),str(week),str(porcent))
-        return generate_response("yes",200)
-    except:
-        return generate_response(error,500)
+# @app.route('/new_report',methods=['POST'])
+# @verify_token
+# def new_report(user):
+#     request_data = request.args.to_dict()
+#     list_params = {"porcent":"number","week":"week","name":"text"}
+#     request_data,errors = da.validate_params(request_data,list_params)
+#     if len(errors) > 0:
+#         return generate_response(errors,200)
+#     try:
+#         porcent = request_data["porcent"]
+#         week = request_data["week"]
+#         name = request_data["name"]
+#         d.new_report(user,str(name),str(week),str(porcent))
+#         return generate_response("yes",200)
+#     except:
+#         return generate_response(error,500)
 
 
-@app.route('/reports/<user_name>',methods=['GET'])
-@verify_token_p
-def reports_name(user_name):
-    list_params = {"user_name":"text"}
-    request_data = {"user_name":user_name}
-    request_data,errors = da.validate_params(request_data,list_params)
-    if len(errors) > 0:
-        return generate_response(errors,200)
-    try:
-        results = d.get_reports(user_name)
-        return generate_response(results,200,type="json")
-    except:
-        return generate_response(error,500)
+# @app.route('/reports/<user_name>',methods=['GET'])
+# @verify_token_p
+# def reports_name(user_name):
+#     list_params = {"user_name":"text"}
+#     request_data = {"user_name":user_name}
+#     request_data,errors = da.validate_params(request_data,list_params)
+#     if len(errors) > 0:
+#         return generate_response(errors,200)
+#     try:
+#         results = d.get_reports(user_name)
+#         return generate_response(results,200,type="json")
+#     except:
+#         return generate_response(error,500)
 
 
-@app.route('/my_reports/',methods=['GET'])
-@verify_token
-def my_reports(user):
-    user = d.get_user_id(user)
-    user = user['user']
-    try:
-        results = d.get_reports(user)
-        return generate_response(results,200,type="json")
-    except:
-        return generate_response(error,500)
+# @app.route('/my_reports/',methods=['GET'])
+# @verify_token
+# def my_reports(user):
+#     user = d.get_user_id(user)
+#     user = user['user']
+#     try:
+#         results = d.get_reports(user)
+#         return generate_response(results,200,type="json")
+#     except:
+#         return generate_response(error,500)
 
 
-@app.route('/reports',methods=['GET'])
-@verify_token
-def reports(user):
-    try:
-        results = d.get_reports()
-        return generate_response(results,200,type="json")
-    except:
-        return generate_response(error,500)
+# @app.route('/reports',methods=['GET'])
+# @verify_token
+# def reports(user):
+#     try:
+#         results = d.get_reports()
+#         return generate_response(results,200,type="json")
+#     except:
+#         return generate_response(error,500)
 
 
 
