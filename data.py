@@ -25,6 +25,13 @@ class Data(metaclass=Singleton):
             for doc in project:
                 result = doc.to_dict(),doc.id
         return result
+    def get_user_id(self,idu):
+        doc = self.user_col.document(u''+str(idu)).get()
+        res = None
+        print(doc.to_dict())
+        res = doc.to_dict()
+        print(res)
+        return res
     def get_user(self,user,passd=None,idu=None):
         docs = []
         if idu != None:
@@ -45,31 +52,30 @@ class Data(metaclass=Singleton):
         user_old = self.get_user(user=user)
         result = None
         if user_old != None:
-            result = False
+            result = "Usuario "+str(user)+" ya existe"
         else:
             docs = list(self.user_col.stream())
             ids = int(len(docs))
             new_id = ids +1
             new_user = self.user_col.document(u''+str(new_id))
-            new_user.set({
+            res = new_user.set({
                 u'user': user,
                 u'pass':passd
             })
-            result = True
+            print(f'Resss {res}')
+            result = "Usuario "+str(user)+" creado"
         return result
-    def split_date(self,date):
-        sp_date = date.split("-")
-        return int(sp_date[0]),int(sp_date[1]),int(sp_date[2])
+    
 
     def new_project(self,start,end,name):
-        start_year,start_month,start_day = self.split_date(start)
-        end_year,end_month,end_day = self.split_date(end)
+        start_year,start_month,start_day = self.da.split_date(start)
+        end_year,end_month,end_day = self.da.split_date(end)
         start_date  = datetime(start_year,start_month,start_day)
         end_date  = datetime(end_year,end_month,end_day)
         list_weeks = self.da.weeks_range(start_date,end_date)
         project_old = self.get_project(name)
         if project_old != None:
-            result = False
+            result = "Proyecto "+str(name)+" ya existe!!"
         else:
             projects = list(self.projects_col.stream())
             ids = int(len(projects))
@@ -81,8 +87,9 @@ class Data(metaclass=Singleton):
                 u'end_date':str(end_date),
                 u'weeks_list':list_weeks
             })
-            result = True
+            result = "Proyecto "+str(name)+" creado!!"
         return result
+
     def new_report(self,user,name,week,porcent):
         project_old = self.get_project(name)
         print(project_old)
@@ -111,6 +118,46 @@ class Data(metaclass=Singleton):
                 result = True
             else:
                 print("no")
+    def get_reports(self,name=None):
+        results = {}
+        projects = list(self.projects_col.stream())
+        reports = None
+        res_reports = {}
+        if name == None:
+            print("Completo")
+            reports = list(self.reports_col.stream())
+            for doc in reports:
+                res_reports[doc.id] = doc.to_dict()
+        else:
+            print(f"user name {name}")
+            user = list(self.user_col.where(u'user', u'==',name).stream())
+            print(f"user {user[0].id}")
+            user_id = str(user[0].id)
+            reports = list(self.reports_col.where(u'user', u'==',user_id).stream())
+            for doc in reports:
+                res_reports[doc.id] = doc.to_dict()
+        users = list(self.user_col.stream())
+        res_users = {}
+        res_projects = {}
+        for doc in users:
+            res_users[doc.id] = doc.to_dict()
+        for doc in projects:
+            res_projects[doc.id] = doc.to_dict()
+        
+        for k,v in res_projects.items():
+            results[v['name']] = {}
+        for k,v in res_reports.items():
+            project = res_projects[v['project']]['name']
+            user = [res_users[v['user']]][0]['user']
+            if not user in results[project]:
+                results[project][user] = {}
+            results[project][user][v['week']] = v['porcent']
+        return results
+
+
+
+
+        
 
 
 

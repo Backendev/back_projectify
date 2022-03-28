@@ -54,11 +54,52 @@ d = Data()
 # date_start = datetime(2021,1,1)
 # date_end = datetime(2023,2,13)
 # week_start = int(date_start.strftime("%V"))
-# da = DataAux()
+da = DataAux()
 # list_r = da.weeks_range(date_start,date_end)
 # print(list_r)
 
-d.new_report("2","aplication analisys","2024-W3","90")
+# d.new_report("2","aplication analisys","2024-W3","90")
+# d.get_reports()
+# d.new_project("2021-2-15","2022-3-15","test2")
+date = da.validate_date("13-2-2021")
+date = da.validate_date("2021-3-31")
+print(date)
+text = "f_@@@ghyu"
+text = da.validate_text(text)
+print(text)
+text_number = "222"
+text_week = "2022-W8"
+number = da.validate_number(text_number)
+week = da.validate_week(text_week)
+print(f'Number {number} - Week {week}')
+text_number = "22aa2"
+text_week = "2022-Wd8"
+number = da.validate_number(text_number)
+week = da.validate_week(text_week)
+print(f'Number {number} - Week {week}')
+
+dict_result = {"name":"ed","year":"3","week":"2020-W7"}
+list_params = {"name":"text","year":"number","week":"week"}
+res,errors = da.validate_params(dict_result,list_params)
+print(res)
+print(errors)
+dict_result = {"name":"","year":"as","week":"2020-hg"}
+res,errors = da.validate_params(dict_result,list_params)
+print(res)
+print(errors)
+
+user = d.get_user_id("1")
+print(f"User {user}")
+text = "1223"
+cipher = da.cipher_pass(text)
+# print(cipher)
+print(f'Cipher {cipher}')
+cipher = da.decipher_pass(cipher)
+print(f'DesCipher {cipher}')
+# date_start = datetime(2020,1,1)
+# week_start = int(date_start.strftime("%V"))
+# print(week_start)
+
 
 
 
