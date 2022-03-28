@@ -14,9 +14,11 @@ class Routers:
         self.da = DataAux()
         self.app = app
         self.error = "No se pudo resolver la solicitud"
+        
         @app.route('/',methods=['GET'])
-            def index():
-                return "Projectify"
+        def index():
+            return "Projectify"
+        
         @app.route('/login',methods=['POST'])
         def login():
             self.tg.change_secret()
