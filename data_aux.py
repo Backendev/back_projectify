@@ -16,6 +16,7 @@ class DataAux():
         list_weeks_temp =[]
         if (month_start == 1 and week_start > 4):
             list_weeks_temp.append(str(year-1)+"-W"+str(week_start))
+            init = 1
         else:
             list_weeks_temp.append(str(year)+"-W"+str(week_start))
         ended_week = week_end
@@ -23,6 +24,7 @@ class DataAux():
             week = str(year)+"-W"+str(i)
             if not week in list_weeks_temp:
                 list_weeks_temp.append(week)
+            print(week)
         return list_weeks_temp
 
 
