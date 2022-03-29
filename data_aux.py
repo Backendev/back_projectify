@@ -8,7 +8,8 @@ from dotenv import load_dotenv
 class DataAux():
 
     load_dotenv()
-
+    def __init__(self):
+        self.iv =  'BBBBBBBBBBBBBBBB'.encode('utf-8')
 
     @staticmethod
     def weeks_for_year(month_start,week_start,week_end,year):
@@ -83,13 +84,10 @@ class DataAux():
         return list_weeks
 
 
-    @staticmethod
     def cipher_pass(text):
-        iv =  'BBBBBBBBBBBBBBBB'.encode('utf-8')
-        # key = os.getenv('SECRET_PASS')
         key = os.environ.get('SECRET_PASS',os.getenv('SECRET_PASS'))
         data= pad(text.encode(),16)
-        cipher = AES.new(key.encode('utf-8'),AES.MODE_CBC,iv)
+        cipher = AES.new(key.encode('utf-8'),AES.MODE_CBC,self.iv)
         cipher= base64.b64encode(cipher.encrypt(data))
         result = cipher.decode("utf-8", "ignore")
         return result
@@ -97,11 +95,9 @@ class DataAux():
 
     @staticmethod
     def decipher_pass(text):
-        iv =  'BBBBBBBBBBBBBBBB'.encode('utf-8')
-        # key = os.getenv('SECRET_PASS')
         key = os.environ.get('SECRET_PASS',os.getenv('SECRET_PASS'))
         enc = base64.b64decode(text)
-        decipher = AES.new(key.encode('utf-8'), AES.MODE_CBC, iv)
+        decipher = AES.new(key.encode('utf-8'), AES.MODE_CBC, self.iv)
         decipher= unpad(decipher.decrypt(enc),16)
         return decipher.decode("utf-8", "ignore")
 
