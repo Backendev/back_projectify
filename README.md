@@ -1,6 +1,6 @@
-﻿﻿**Prueba técnica desarrollador Backend Leanware**
+﻿﻿**Prueba técnica desarrollador Backend Leanware**:computer:
 
-**-Contexto**
+**-Contexto**:clipboard:
 
 Projectify es una aplicación web que permite a la agencia de publicidad AdsForGood tener visibilidad sobre
 el estado de sus proyectos de una manera muy simple.
@@ -46,14 +46,23 @@ Framework para endpoint Api : Flask
 projectify
 
 ├── aplication.py
+
 ├── config.json
+
 ├── data_aux.py
+
 ├── data.py
+
 ├── data_test.py
+
 ├── .env
+
 ├── g_token.py
+
 ├── main.py
+
 ├── router.py
+
 └── singleton.py
 
 
