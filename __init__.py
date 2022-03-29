@@ -158,8 +158,8 @@ def new_report(user):
         porcent = request_data["porcent"]
         week = request_data["week"]
         name = request_data["name"]
-        d.new_report(user,str(name),str(week),str(porcent))
-        return generate_response("yes",200)
+        response = d.new_report(user,str(name),str(week),str(porcent))
+        return generate_response(response,200)
     except:
         return generate_response(error,500)
 
