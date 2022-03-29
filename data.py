@@ -49,7 +49,9 @@ class Data(metaclass=Singleton):
             if users[0].id == idu:
                 docs = users
         elif passd != None:
-            passd = self.da.decipher_pass(passd)
+            print(passd)
+            passd = self.da.cipher_pass(passd)
+            print(passd)
             docs = list(self.user_col.where(u'user', u'==',user).where(u'pass',u'==',passd).stream())
         else:
             docs = list(self.user_col.where(u'user', u'==',user).stream())
@@ -63,11 +65,13 @@ class Data(metaclass=Singleton):
     
     def new_user(self,user,passd):
         user_old = self.get_user(user=user)
+        print(user_old)
         result = None
         if user_old != None:
             result = "Usuario "+str(user)+" ya existe"
         else:
             passd = self.da.cipher_pass(passd)
+            print(passd)
             docs = list(self.user_col.stream())
             ids = int(len(docs))
             new_id = ids +1

@@ -85,7 +85,9 @@ def login():
         return generate_response(errors,200)
     user = res['user']
     passd = res['pass']
+    print("333")
     res = d.get_user(user,passd)
+    print(res)
     if res != None:
         try:
             message = {res[1]:res[0]['user']}
@@ -106,9 +108,11 @@ def new_user():
     if len(errors) > 0:
         return generate_response(errors,200)
     try:
+        print("22")
         user = request_data['user']
         passd = request_data['pass']
         resp = d.new_user(user,passd)
+        print(resp)
         return generate_response(resp,200)
     except:
         return generate_response(error,500)
