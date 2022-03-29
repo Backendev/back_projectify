@@ -29,13 +29,12 @@ class TokenGen(metaclass=Singleton):
                 token_decode = jwt.decode(token,i,algorithms=['HS256'])
             except:
                 pass
-            print(f'Tok dec {token_decode}')
             if token_decode != None:
                 return token_decode        
         return False
     
     
     def change_secret(self):
-        s = os.getenv('SECRET_SESSION')
+        s = os.environ.get('SECRET_SESSION',os.getenv('SECRET_SESSION'))
         if len(self.secret) < 6:
             self.secret.append(''.join(random.sample(s,len(s))))

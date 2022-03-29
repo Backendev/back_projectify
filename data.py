@@ -35,9 +35,7 @@ class Data(metaclass=Singleton):
     def get_user_id(self,idu):
         doc = self.user_col.document(u''+str(idu)).get()
         res = None
-        print(doc.to_dict())
         res = doc.to_dict()
-        print(res)
         return res
 
 
@@ -49,9 +47,7 @@ class Data(metaclass=Singleton):
             if users[0].id == idu:
                 docs = users
         elif passd != None:
-            print(passd)
             passd = self.da.cipher_pass(passd)
-            print(passd)
             docs = list(self.user_col.where(u'user', u'==',user).where(u'pass',u'==',passd).stream())
         else:
             docs = list(self.user_col.where(u'user', u'==',user).stream())
@@ -65,13 +61,11 @@ class Data(metaclass=Singleton):
     
     def new_user(self,user,passd):
         user_old = self.get_user(user=user)
-        print(user_old)
         result = None
         if user_old != None:
             result = "Usuario "+str(user)+" ya existe"
         else:
             passd = self.da.cipher_pass(passd)
-            print(passd)
             docs = list(self.user_col.stream())
             ids = int(len(docs))
             new_id = ids +1
@@ -80,7 +74,6 @@ class Data(metaclass=Singleton):
                 u'user': user,
                 u'pass':passd
             })
-            print(f'Resss {res}')
             result = "Usuario "+str(user)+" creado"
         return result
     
@@ -144,9 +137,7 @@ class Data(metaclass=Singleton):
             for doc in reports:
                 res_reports[doc.id] = doc.to_dict()
         else:
-            print(f"user name {name}")
             user = list(self.user_col.where(u'user', u'==',name).stream())
-            print(f"user {user[0].id}")
             user_id = str(user[0].id)
             reports = list(self.reports_col.where(u'user', u'==',user_id).stream())
             for doc in reports:

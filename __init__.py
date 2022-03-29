@@ -85,9 +85,7 @@ def login():
         return generate_response(errors,200)
     user = res['user']
     passd = res['pass']
-    print("333")
     res = d.get_user(user,passd)
-    print(res)
     if res != None:
         try:
             message = {res[1]:res[0]['user']}
@@ -108,11 +106,9 @@ def new_user():
     if len(errors) > 0:
         return generate_response(errors,200)
     try:
-        print("22")
         user = request_data['user']
         passd = request_data['pass']
         resp = d.new_user(user,passd)
-        print(resp)
         return generate_response(resp,200)
     except:
         return generate_response(error,500)
@@ -121,9 +117,7 @@ def new_user():
 @app.route('/verify',methods=['POST'])
 @verify_token
 def verify(user):
-    print(user)
     user = d.get_user_id(user)
-    print(user)
     return generate_response("Yes",200)
 
 
@@ -139,7 +133,6 @@ def new_project(user):
         start = request_data["start"]
         end = request_data["end"]
         name = request_data["name"]
-        print(f'Name {name} - Start {start} - End {end}')
         response = d.new_project(start,end,name)
         return generate_response(response,200)
     except:

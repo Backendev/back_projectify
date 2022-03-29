@@ -25,7 +25,6 @@ class DataAux():
             week = str(year)+"-W"+str(i)
             if not week in list_weeks_temp:
                 list_weeks_temp.append(week)
-            print(week)
         return list_weeks_temp
 
 
@@ -66,12 +65,9 @@ class DataAux():
 
     def week_range_month(self,now):
         year = now.year
-        print(year)
         month = now.month
-        print(month)
         start,end = calendar.monthrange(year,month)
         start = 1
-        print(f'Inicio {start} - End {end}')
         date_start = datetime(now.year,now.month,start)
         date_end = datetime(now.year,now.month,end)
         week_start = int(date_start.strftime("%V"))
@@ -79,7 +75,8 @@ class DataAux():
         list_weeks = []
         if (now.month == 1 and week_start > 4):
             list_weeks.append(str(int(now.year) - 1)+"-W"+str(week_start))
-        for i in range(1,week_end):
+            week_start = 1
+        for i in range(week_start,week_end):
             list_weeks.append(str(now.year)+"-W"+str(i))
         return list_weeks
 
